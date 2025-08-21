@@ -70,46 +70,46 @@ int main()
   // Build and Compile Shader Programs
   // ---------------------------------
   // vertex shader
-  unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
-  glCompileShader(vertex_shader);
-  int success;
-  char info_log[512];
-  glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-  if (!success)
-  {
-    glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
-    printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n", info_log);
-  }
-  // fragment shader
-  unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
-  glCompileShader(fragment_shader);
-  // check for shader compile errors
-  glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-  if (!success)
-  {
-    glGetShaderInfoLog(fragment_shader, 512, NULL, info_log);
-    printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n", info_log);
-  }
+  // unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+  // glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
+  // glCompileShader(vertex_shader);
+  // int success;
+  // char info_log[512];
+  // glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+  // if (!success)
+  // {
+  //   glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
+  //   printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n", info_log);
+  // }
+  // // fragment shader
+  // unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+  // glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
+  // glCompileShader(fragment_shader);
+  // // check for shader compile errors
+  // glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+  // if (!success)
+  // {
+  //   glGetShaderInfoLog(fragment_shader, 512, NULL, info_log);
+  //   printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n", info_log);
+  // }
 
-  // link shaders
-  unsigned int shader_program = glCreateProgram();
-  // unsigned int shader_program_2 = glCreateProgram();
-  glAttachShader(shader_program, vertex_shader);
-  glAttachShader(shader_program, fragment_shader);
-  // glAttachShader(shader_program_2, vertex_shader);
-  // glAttachShader(shader_program_2, fragment_shader_2);
-  glLinkProgram(shader_program);
-  glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(shader_program, 512, NULL, info_log);
-    printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n", info_log);
-  }
+  // // link shaders
+  // unsigned int shader_program = glCreateProgram();
+  // // unsigned int shader_program_2 = glCreateProgram();
+  // glAttachShader(shader_program, vertex_shader);
+  // glAttachShader(shader_program, fragment_shader);
+  // // glAttachShader(shader_program_2, vertex_shader);
+  // // glAttachShader(shader_program_2, fragment_shader_2);
+  // glLinkProgram(shader_program);
+  // glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
+  // if (!success) {
+  //   glGetProgramInfoLog(shader_program, 512, NULL, info_log);
+  //   printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n", info_log);
+  // }
 
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader);
-  Shader shader_program_2 =
+  // glDeleteShader(vertex_shader);
+  // glDeleteShader(fragment_shader);
+  Shader shader_program =
       ConstructShaders("/home/donovan/projects/hobby/Familiars-working-title-/"
                        "src/shaders/shader.vs",
                        "/home/donovan/projects/hobby/Familiars-working-title-/"
@@ -125,10 +125,10 @@ int main()
   };
   
   float vertices_1[] = {
-    0.5f,  0.5f, 0.0f,  // top right
-    0.5f, -0.5f, 0.0f,  // bottom right
-    0.1f, -0.5f, 0.0f,  // bottom left
-    0.1f,  0.5f, 0.0f   // top left 
+    0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f,  // top right
+    0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, // bottom right
+    0.1f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, // bottom left
+    0.1f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f // top left 
   };
   
   unsigned int indices[] = {  // note that we start from 0!
@@ -164,8 +164,12 @@ int main()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[1]);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
+  // color attribute
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                        (void *)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
 
   // glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -182,15 +186,15 @@ int main()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(shader_program);
+    glUseProgram(shader_program.ID);
     glBindVertexArray(VAOs[0]);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    float timeValue = glfwGetTime();
-    float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-    int vertexColorLocation = glGetUniformLocation(shader_program_2.ID, "ourColor");
-    glUseProgram(shader_program_2.ID);
-    glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+    // float timeValue = glfwGetTime();
+    // float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+    // int vertexColorLocation = glGetUniformLocation(shader_program.ID, "ourColor");
+    // glUseProgram(shader_program.ID);
+    // glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
     glBindVertexArray(VAOs[1]);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -201,7 +205,7 @@ int main()
   glDeleteVertexArrays(2, VAOs);
   glDeleteBuffers(2, VBOs);
   glDeleteBuffers(2, EBOs);
-  glDeleteProgram(shader_program);
+  glDeleteProgram(shader_program.ID);
 
   // Clean up
   glfwTerminate();
