@@ -7,39 +7,6 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void process_input(GLFWwindow *window);
 
-struct Triangle {
-  float vertex_a_x;
-  float vertex_a_y;
-  float vertex_b_x;
-  float vertex_b_y;
-  float vertex_c_x;
-  float vertex_c_y;
-};
-
-const char *vertex_shader_source = "#version 330 core\n"
-  "layout (location = 0) in vec3 aPos;\n"
-  "layout (location = 1) in vec3 aColor;\n"
-  "out vec3 ourColor;\n"
-  "void main()\n"
-  "{\n"
-  "   gl_Position = vec4(aPos, 1.0);\n"
-  "   ourColor = aColor;\n"
-  "}\0";
-const char *fragment_shader_source = "#version 330 core\n"
-  "out vec4 FragColor;\n"
-  "in vec3 ourColor;\n"
-  "void main()\n"
-  "{\n"
-  "   FragColor = vec4(ourColor, 1.0f);\n"
-  "}\n\0";
-const char *fragment_shader_source_2 = "#version 330 core\n"
-  "out vec4 FragColor;\n"
-  "uniform vec4 ourColor; // we set this variable in the OpenGL code.\n"
-  "void main()\n"
-  "{\n"
-  "   FragColor = ourColor;\n"
-  "}\n\0";
-
 int main()
 {
   // Initialize GLFW
@@ -69,50 +36,10 @@ int main()
   
   // Build and Compile Shader Programs
   // ---------------------------------
-  // vertex shader
-  // unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  // glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
-  // glCompileShader(vertex_shader);
-  // int success;
-  // char info_log[512];
-  // glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-  // if (!success)
-  // {
-  //   glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
-  //   printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n", info_log);
-  // }
-  // // fragment shader
-  // unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  // glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
-  // glCompileShader(fragment_shader);
-  // // check for shader compile errors
-  // glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-  // if (!success)
-  // {
-  //   glGetShaderInfoLog(fragment_shader, 512, NULL, info_log);
-  //   printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n", info_log);
-  // }
-
-  // // link shaders
-  // unsigned int shader_program = glCreateProgram();
-  // // unsigned int shader_program_2 = glCreateProgram();
-  // glAttachShader(shader_program, vertex_shader);
-  // glAttachShader(shader_program, fragment_shader);
-  // // glAttachShader(shader_program_2, vertex_shader);
-  // // glAttachShader(shader_program_2, fragment_shader_2);
-  // glLinkProgram(shader_program);
-  // glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-  // if (!success) {
-  //   glGetProgramInfoLog(shader_program, 512, NULL, info_log);
-  //   printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n", info_log);
-  // }
-
-  // glDeleteShader(vertex_shader);
-  // glDeleteShader(fragment_shader);
   Shader shader_program =
-      ConstructShaders("/home/donovan/projects/hobby/Familiars-working-title-/"
+      ConstructShaders("../"
                        "src/shaders/shader.vs",
-                       "/home/donovan/projects/hobby/Familiars-working-title-/"
+                       "../"
                        "src/shaders/shader.fs");
   // glDeleteShader(fragment_shader_2);
 

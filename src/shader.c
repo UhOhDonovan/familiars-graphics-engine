@@ -1,21 +1,26 @@
 #include <shader.h>
 
-char *ReadFileToString(FILE *fp) {
+char *ReadFileToString(FILE *fp)
+{
   int c;
   int nch = 0;
   int size = 50;
   char *buf = malloc(size);
-  if (buf == NULL) {
+  if (buf == NULL)
+  {
     fprintf(stderr, "out of memory\n");
     exit(1);
   }
 
-  while ((c = fgetc(fp)) != EOF) {
-    if (nch >= size - 1) {
+  while ((c = fgetc(fp)) != EOF)
+  {
+    if (nch >= size - 1)
+    {
       /* time to make it bigger */
       size += 50;
       buf = realloc(buf, size);
-      if (buf == NULL) {
+      if (buf == NULL)
+      {
         fprintf(stderr, "out of memory\n");
         exit(1);
       }
@@ -28,7 +33,8 @@ char *ReadFileToString(FILE *fp) {
   return buf;
 }
 
-Shader ConstructShaders(const char *vertex_path, const char *fragment_path) {
+Shader ConstructShaders(const char *vertex_path, const char *fragment_path)
+{
   // Initialize shader struct
   Shader s;
 
@@ -42,7 +48,7 @@ Shader ConstructShaders(const char *vertex_path, const char *fragment_path) {
 
   fclose(vfptr);
   fclose(ffptr);
-  
+
   // Compile shaders
   unsigned int vertex, fragment;
   int success;
@@ -54,9 +60,10 @@ Shader ConstructShaders(const char *vertex_path, const char *fragment_path) {
   glCompileShader(vertex);
   // print compile errors if any
   glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
-  if (!success) {
+  if (!success)
+  {
     glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-    printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n", infoLog);
+    printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s", infoLog);
   };
 
   // Fragment Shaders
@@ -65,9 +72,10 @@ Shader ConstructShaders(const char *vertex_path, const char *fragment_path) {
   glCompileShader(fragment);
   // print compile errors if any
   glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
-  if (!success) {
+  if (!success)
+  {
     glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-    printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n", infoLog);
+    printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s", infoLog);
   };
 
   // Compile Shaders
@@ -77,7 +85,8 @@ Shader ConstructShaders(const char *vertex_path, const char *fragment_path) {
   glLinkProgram(s.ID);
   // print linking errors if any
   glGetProgramiv(s.ID, GL_LINK_STATUS, &success);
-  if (!success) {
+  if (!success)
+  {
     glGetProgramInfoLog(s.ID, 512, NULL, infoLog);
     printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s", infoLog);
   }
@@ -89,18 +98,22 @@ Shader ConstructShaders(const char *vertex_path, const char *fragment_path) {
   return s;
 }
 
-void use(unsigned int id) {
+void use(unsigned int id)
+{
   glUseProgram(id);
 }
 
-void setBool(unsigned int id, const char * name, _Bool value) {
+void setBool(unsigned int id, const char *name, _Bool value)
+{
   glUniform1i(glGetUniformLocation(id, name), (int)value);
 }
 
-void setInt(unsigned int id, const char* name, int value) {
+void setInt(unsigned int id, const char *name, int value)
+{
   glUniform1i(glGetUniformLocation(id, name), value);
 }
 
-void setFloat(unsigned int id, const char* name, float value) {
+void setFloat(unsigned int id, const char *name, float value)
+{
   glUniform1f(glGetUniformLocation(id, name), value);
 }
