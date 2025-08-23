@@ -103,17 +103,71 @@ void use(unsigned int id)
   glUseProgram(id);
 }
 
-void setBool(unsigned int id, const char *name, _Bool value)
+void setBool(unsigned int id, const char *name, _Bool *value, size_t size)
 {
-  glUniform1i(glGetUniformLocation(id, name), (int)value);
+  if (size == 1) 
+  {
+    glUniform1i(glGetUniformLocation(id, name), value[0]);
+  }
+  else if (size == 2)
+  {
+    glUniform2i(glGetUniformLocation(id, name), value[0], value[1]);
+  } 
+  else if (size == 3)
+  {
+    glUniform3i(glGetUniformLocation(id, name), value[0], value[1], value[2]);
+  }
+  else if (size == 4) {
+    glUniform4i(glGetUniformLocation(id, name), value[0], value[1], value[2], value[3]);
+  }
+  else 
+  {
+    printf("ERROR::SHADER::PROGRAM::INVALID_UNIFORM_SIZE\nsize: %lu\n", size);
+  }
 }
 
-void setInt(unsigned int id, const char *name, int value)
+void setInt(unsigned int id, const char *name, int *value, size_t size)
 {
-  glUniform1i(glGetUniformLocation(id, name), value);
+  if (size == 1) 
+  {
+    glUniform1i(glGetUniformLocation(id, name), value[0]);
+  }
+  else if (size == 2)
+  {
+    glUniform2i(glGetUniformLocation(id, name), value[0], value[1]);
+  } 
+  else if (size == 3)
+  {
+    glUniform3i(glGetUniformLocation(id, name), value[0], value[1], value[2]);
+  }
+  else if (size == 4) {
+    glUniform4i(glGetUniformLocation(id, name), value[0], value[1], value[2], value[3]);
+  }
+  else 
+  {
+    printf("ERROR::SHADER::PROGRAM::INVALID_UNIFORM_SIZE\nsize: %lu\n", size);
+  }
 }
 
-void setFloat(unsigned int id, const char *name, float value)
+void setFloat(unsigned int id, const char *name, float *value, size_t size)
 {
-  glUniform1f(glGetUniformLocation(id, name), value);
+  if (size == 1) 
+  {
+    glUniform1f(glGetUniformLocation(id, name), value[0]);
+  }
+  else if (size == 2)
+  {
+    glUniform2f(glGetUniformLocation(id, name), value[0], value[1]);
+  } 
+  else if (size == 3)
+  {
+    glUniform3f(glGetUniformLocation(id, name), value[0], value[1], value[2]);
+  }
+  else if (size == 4) {
+    glUniform4f(glGetUniformLocation(id, name), value[0], value[1], value[2], value[3]);
+  }
+  else 
+  {
+    printf("ERROR::SHADER::PROGRAM::INVALID_UNIFORM_SIZE\nsize: %lu\n", size);
+  }
 }
