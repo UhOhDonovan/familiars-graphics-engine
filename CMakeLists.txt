@@ -11,7 +11,7 @@ target_link_libraries(familiars-engine glfw)
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 
-# GLAD
+# GLAD, CGLM
 include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/include)
 
 find_library(MATH_LIBRARY m)

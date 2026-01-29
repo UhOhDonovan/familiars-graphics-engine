@@ -2,172 +2,175 @@
 
 char *ReadFileToString(FILE *fp)
 {
-  int c;
-  int nch = 0;
-  int size = 50;
-  char *buf = malloc(size);
-  if (buf == NULL)
-  {
-    fprintf(stderr, "out of memory\n");
-    exit(1);
-  }
-
-  while ((c = fgetc(fp)) != EOF)
-  {
-    if (nch >= size - 1)
+    int c;
+    int nch = 0;
+    int size = 50;
+    char *buf = malloc(size);
+    if (buf == NULL)
     {
-      /* time to make it bigger */
-      size += 50;
-      buf = realloc(buf, size);
-      if (buf == NULL)
-      {
         fprintf(stderr, "out of memory\n");
         exit(1);
-      }
     }
 
-    buf[nch++] = c;
-  }
+    while ((c = fgetc(fp)) != EOF)
+    {
+        if (nch >= size - 1)
+        {
+            /* time to make it bigger */
+            size += 50;
+            buf = realloc(buf, size);
+            if (buf == NULL)
+            {
+                fprintf(stderr, "out of memory\n");
+                exit(1);
+            }
+        }
 
-  buf[nch++] = '\0';
-  return buf;
+        buf[nch++] = c;
+    }
+
+    buf[nch++] = '\0';
+    return buf;
 }
 
 Shader ConstructShaders(const char *vertex_path, const char *fragment_path)
 {
-  // Initialize shader struct
-  Shader s;
+    // Initialize shader struct
+    Shader s;
 
-  // Initialize file object
-  FILE *vfptr = fopen(vertex_path, "r");
-  FILE *ffptr = fopen(fragment_path, "r");
+    // Initialize file object
+    FILE *vfptr = fopen(vertex_path, "r");
+    FILE *ffptr = fopen(fragment_path, "r");
 
-  // Collect Shader code
-  s.vShaderCode = ReadFileToString(vfptr);
-  s.fShaderCode = ReadFileToString(ffptr);
+    // Collect Shader code
+    s.vShaderCode = ReadFileToString(vfptr);
+    s.fShaderCode = ReadFileToString(ffptr);
 
-  fclose(vfptr);
-  fclose(ffptr);
+    fclose(vfptr);
+    fclose(ffptr);
 
-  // Compile shaders
-  unsigned int vertex, fragment;
-  int success;
-  char infoLog[512];
+    // Compile shaders
+    unsigned int vertex, fragment;
+    int success;
+    char infoLog[512];
 
-  // Vertex Shaders
-  vertex = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex, 1, &s.vShaderCode, NULL);
-  glCompileShader(vertex);
-  // print compile errors if any
-  glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
-  if (!success)
-  {
-    glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-    printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s", infoLog);
-  };
+    // Vertex Shaders
+    vertex = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex, 1, &s.vShaderCode, NULL);
+    glCompileShader(vertex);
+    // print compile errors if any
+    glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(vertex, 512, NULL, infoLog);
+        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s", infoLog);
+    };
 
-  // Fragment Shaders
-  fragment = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment, 1, &s.fShaderCode, NULL);
-  glCompileShader(fragment);
-  // print compile errors if any
-  glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
-  if (!success)
-  {
-    glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-    printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s", infoLog);
-  };
+    // Fragment Shaders
+    fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment, 1, &s.fShaderCode, NULL);
+    glCompileShader(fragment);
+    // print compile errors if any
+    glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(fragment, 512, NULL, infoLog);
+        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s", infoLog);
+    };
 
-  // Compile Shaders
-  s.ID = glCreateProgram();
-  glAttachShader(s.ID, vertex);
-  glAttachShader(s.ID, fragment);
-  glLinkProgram(s.ID);
-  // print linking errors if any
-  glGetProgramiv(s.ID, GL_LINK_STATUS, &success);
-  if (!success)
-  {
-    glGetProgramInfoLog(s.ID, 512, NULL, infoLog);
-    printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s", infoLog);
-  }
+    // Compile Shaders
+    s.ID = glCreateProgram();
+    glAttachShader(s.ID, vertex);
+    glAttachShader(s.ID, fragment);
+    glLinkProgram(s.ID);
+    // print linking errors if any
+    glGetProgramiv(s.ID, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+        glGetProgramInfoLog(s.ID, 512, NULL, infoLog);
+        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s", infoLog);
+    }
 
-  // delete the linked shaders
-  glDeleteShader(vertex);
-  glDeleteShader(fragment);
+    // delete the linked shaders
+    glDeleteShader(vertex);
+    glDeleteShader(fragment);
 
-  return s;
+    return s;
 }
 
 void use(unsigned int id)
 {
-  glUseProgram(id);
+    glUseProgram(id);
 }
 
 void setBool(unsigned int id, const char *name, _Bool *value, size_t size)
 {
-  if (size == 1) 
-  {
-    glUniform1i(glGetUniformLocation(id, name), value[0]);
-  }
-  else if (size == 2)
-  {
-    glUniform2i(glGetUniformLocation(id, name), value[0], value[1]);
-  } 
-  else if (size == 3)
-  {
-    glUniform3i(glGetUniformLocation(id, name), value[0], value[1], value[2]);
-  }
-  else if (size == 4) {
-    glUniform4i(glGetUniformLocation(id, name), value[0], value[1], value[2], value[3]);
-  }
-  else 
-  {
-    printf("ERROR::SHADER::PROGRAM::INVALID_UNIFORM_SIZE\nsize: %lu\n", size);
-  }
+    if (size == 1)
+    {
+        glUniform1i(glGetUniformLocation(id, name), value[0]);
+    }
+    else if (size == 2)
+    {
+        glUniform2i(glGetUniformLocation(id, name), value[0], value[1]);
+    }
+    else if (size == 3)
+    {
+        glUniform3i(glGetUniformLocation(id, name), value[0], value[1], value[2]);
+    }
+    else if (size == 4)
+    {
+        glUniform4i(glGetUniformLocation(id, name), value[0], value[1], value[2], value[3]);
+    }
+    else
+    {
+        printf("ERROR::SHADER::PROGRAM::INVALID_UNIFORM_SIZE\nsize: %lu\n", size);
+    }
 }
 
 void setInt(unsigned int id, const char *name, int *value, size_t size)
 {
-  if (size == 1) 
-  {
-    glUniform1i(glGetUniformLocation(id, name), value[0]);
-  }
-  else if (size == 2)
-  {
-    glUniform2i(glGetUniformLocation(id, name), value[0], value[1]);
-  } 
-  else if (size == 3)
-  {
-    glUniform3i(glGetUniformLocation(id, name), value[0], value[1], value[2]);
-  }
-  else if (size == 4) {
-    glUniform4i(glGetUniformLocation(id, name), value[0], value[1], value[2], value[3]);
-  }
-  else 
-  {
-    printf("ERROR::SHADER::PROGRAM::INVALID_UNIFORM_SIZE\nsize: %lu\n", size);
-  }
+    if (size == 1)
+    {
+        glUniform1i(glGetUniformLocation(id, name), value[0]);
+    }
+    else if (size == 2)
+    {
+        glUniform2i(glGetUniformLocation(id, name), value[0], value[1]);
+    }
+    else if (size == 3)
+    {
+        glUniform3i(glGetUniformLocation(id, name), value[0], value[1], value[2]);
+    }
+    else if (size == 4)
+    {
+        glUniform4i(glGetUniformLocation(id, name), value[0], value[1], value[2], value[3]);
+    }
+    else
+    {
+        printf("ERROR::SHADER::PROGRAM::INVALID_UNIFORM_SIZE\nsize: %lu\n", size);
+    }
 }
 
 void setFloat(unsigned int id, const char *name, float *value, size_t size)
 {
-  if (size == 1) 
-  {
-    glUniform1f(glGetUniformLocation(id, name), value[0]);
-  }
-  else if (size == 2)
-  {
-    glUniform2f(glGetUniformLocation(id, name), value[0], value[1]);
-  } 
-  else if (size == 3)
-  {
-    glUniform3f(glGetUniformLocation(id, name), value[0], value[1], value[2]);
-  }
-  else if (size == 4) {
-    glUniform4f(glGetUniformLocation(id, name), value[0], value[1], value[2], value[3]);
-  }
-  else 
-  {
-    printf("ERROR::SHADER::PROGRAM::INVALID_UNIFORM_SIZE\nsize: %lu\n", size);
-  }
+    if (size == 1)
+    {
+        glUniform1f(glGetUniformLocation(id, name), value[0]);
+    }
+    else if (size == 2)
+    {
+        glUniform2f(glGetUniformLocation(id, name), value[0], value[1]);
+    }
+    else if (size == 3)
+    {
+        glUniform3f(glGetUniformLocation(id, name), value[0], value[1], value[2]);
+    }
+    else if (size == 4)
+    {
+        glUniform4f(glGetUniformLocation(id, name), value[0], value[1], value[2], value[3]);
+    }
+    else
+    {
+        printf("ERROR::SHADER::PROGRAM::INVALID_UNIFORM_SIZE\nsize: %lu\n", size);
+    }
 }

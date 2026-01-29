@@ -2,4 +2,5 @@
 build
 main
 out
+include/cglm
 *.zip
